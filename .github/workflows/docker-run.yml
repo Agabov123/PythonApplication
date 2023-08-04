@@ -1,0 +1,19 @@
+name: Docker Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Pull Docker image
+        run: docker pull agabov38/my-python-app:latest
+
+      - name: Run Docker container
+        run: docker run -d -p 5000:5000 agabov38/my-python-app:latest
