@@ -19,8 +19,22 @@ jobs:
       - name: Login to Docker Hub
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      - name: Build and push Docker image
+      - name: Build Docker image and capture logs
+        id: docker-build
         run: |
-          docker build -t $DOCKER_USERNAME/my-python-app .
+          docker build -t $DOCKER_USERNAME/my-python-app . > docker_build_logs.txt 2>&1
+        continue-on-error: true
+
+      - name: Display build logs
+        run: cat docker_build_logs.txt
+
+      - name: Upload logs as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker_build_logs
+          path: docker_build_logs.txt
+
+      - name: Push Docker image
+        run: |
           docker tag $DOCKER_USERNAME/my-python-app $DOCKER_USERNAME/my-python-app:latest
           docker push $DOCKER_USERNAME/my-python-app:latest
